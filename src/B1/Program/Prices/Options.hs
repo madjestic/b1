@@ -15,7 +15,7 @@ data DataSource = Google | Mock deriving Show
 
 defaultOptions = Options
   { dataSource = Google
-  , symbol = "SPY"
+  , symbol = "GOOG"
   }
 
 readOptions :: [String] -> IO (Options, [String])

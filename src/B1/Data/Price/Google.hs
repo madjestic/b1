@@ -26,9 +26,10 @@ getGooglePrices startDate endDate symbol = pricesOrError
     formattedStartDate = formatDate startDate
     formattedEndDate = formatDate endDate
 
-    url = "http://www.google.com/finance/historical?output=csv&q=" ++ symbol
+    url = "http://www.google.com/finance/historical?q=NASDAQ:" ++ symbol
         ++ "&startdate=" ++ formattedStartDate
-        ++ "&enddate=" ++ formattedEndDate
+        ++ "&enddate="   ++ formattedEndDate
+        ++ "&output=csv"
   
     pricesOrError = do
       putStrLn url
