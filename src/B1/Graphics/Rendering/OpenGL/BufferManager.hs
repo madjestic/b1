@@ -35,12 +35,12 @@ getOrCreateBindedBuffer (BufferManager freeBuffersRef) size = do
   maybeBufferObject <- atomicModifyIORef freeBuffersRef (nextBuffer size)
   case maybeBufferObject of
     Just bufferObject -> do
-      putTraceMsg $ "Using recycled buffer: " ++ show bufferObject
+      traceIO $ "Using recycled buffer: " ++ show bufferObject
       bindBuffer ArrayBuffer $= Just bufferObject
       return bufferObject
     _ -> do
       [bufferObject] <- genObjectNames 1
-      putTraceMsg $ "Created new buffer: " ++ show bufferObject
+      traceIO $ "Created new buffer: " ++ show bufferObject
           ++ " Size: " ++ show size
       bindBuffer ArrayBuffer $= Just bufferObject
       bufferData ArrayBuffer $= (fromIntegral size, nullPtr, DynamicDraw)
@@ -61,7 +61,7 @@ recycleBuffer (BufferManager freeBuffersRef) bufferObject = do
   bindBuffer ArrayBuffer $= Just bufferObject
   (size, _, _) <- get $ bufferData ArrayBuffer
   bindBuffer ArrayBuffer $= Nothing
-  putTraceMsg $ "Recycling buffer: " ++ show bufferObject
+  traceIO $ "Recycling buffer: " ++ show bufferObject
       ++ " Size: " ++ show size
 
   let newBuffer = Buffer bufferObject $ fromIntegral size

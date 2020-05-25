@@ -46,7 +46,7 @@ createVbo resources vboSpecs = do
                 map (\(VboSpec _ _ elements) -> elements) vboSpecs
         pokeArray ptr allElements
         putMVar unmapMVar True
-        putTraceMsg $ "VBO Estimated size: " ++ show numBytes
+        traceIO $ "VBO Estimated size: " ++ show numBytes
             ++ " Real size: " ++ show (length allElements * 4)
     _ -> error "Couldn't map buffer..."
 

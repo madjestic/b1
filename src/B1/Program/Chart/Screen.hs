@@ -172,7 +172,7 @@ drawScreenLoop
   unless (config == nextConfig) $ do
     -- TODO: Extract this code into a separate ConfigManager module
     forkIO $ do
-      putTraceMsg $ "Saving configuration..."
+      traceIO $ "Saving configuration..."
       putMVar configLock nextConfig
       writeConfig configPath nextConfig
       takeMVar configLock

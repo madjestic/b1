@@ -96,7 +96,7 @@ parsePriceTokens _ = Nothing
 
 parseDateString :: String -> Maybe LocalTime
 parseDateString time =
-  parseTime Data.Time.defaultTimeLocale "%e-%b-%y-%C" (time ++ "-20")
+  parseTimeM True Data.Time.defaultTimeLocale "%e-%b-%y-%C" (time ++ "-20")
 
 parseValue :: (Read a) => String -> Maybe a
 parseValue string =

@@ -70,7 +70,7 @@ bindTexture textureNumber fileName = do
   textureBinding Texture2D $= Just (TextureObject (fromIntegral textureNumber))
   textureFilter Texture2D $= ((Linear', Nothing), Linear')
   loadResult <- loadTexture2D fileName [BuildMipMaps]
-  putTraceMsg $ "Loading texture " ++ fileName ++ "..."
+  traceIO $ "Loading texture " ++ fileName ++ "..."
       ++ if loadResult then "SUCCESS" else "FAIL"
 
 -- | Initialize the resources that should be immutable like fonts.
@@ -97,11 +97,12 @@ readAndCompileShader :: ShaderType -> FilePath -> IO Shader
 readAndCompileShader shaderType filePath = do
   src <- readFile filePath
   shader <- createShader shaderType
-  shaderSource shader $= [src]
+  --shaderSource shader $= [src]
+  shaderSourceBS shader $= packUtf8 src
   compileShader shader
   ok <- get $ compileStatus shader
   infoLog <- get $ shaderInfoLog shader
-  putTraceMsg $ "Shader info log: " ++ infoLog
+  traceIO $ "Shader info log: " ++ infoLog
   unless ok $ do
     deleteObjectNames [shader]
     ioError $ userError "Shader compilation failed"
@@ -114,7 +115,7 @@ createProgram vertexShader fragmentShader = do
   linkProgram program
   ok <- get $ linkStatus program
   infoLog <- get $ programInfoLog program
-  putTraceMsg $ "Program info log: " ++ infoLog
+  traceIO $ "Program info log: " ++ infoLog
   unless ok $ do
     deleteObjectNames [program]
     ioError $ userError "Program linking failed"
