@@ -66,12 +66,13 @@ data GraphBoundSet = GraphBoundSet
   , dividerLines :: [LineSegment]
   }
 
-data GraphState = GraphState
-  { options :: GraphOptions
-  , stockData :: StockData
+data GraphState =
+  GraphState
+  { options         :: GraphOptions
+  , stockData       :: StockData
   , stockDataStatus :: StockDataStatus
-  , maybeVbo :: Maybe Vbo
-  , maybeOverlayState :: Maybe O.OverlayState
+  , maybeVbo        :: Maybe Vbo
+  , maybeOverlayState     :: Maybe O.OverlayState
   , loadingAlphaAnimation :: Animation (GLfloat, Dirty)
   , contentAlphaAnimation :: Animation (GLfloat, Dirty)
   }

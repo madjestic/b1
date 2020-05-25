@@ -26,9 +26,12 @@ executable b1-chart
   ghc-options:      -main-is B1.Program.Chart.Main -threaded -O2
   build-depends:
                      base       ^>=4.12.0.0
+                   , bytestring ^>=0.10.8.2
+                   , containers ^>=0.5.10.2
+                   , http-conduit ^>=2.2.4                     
                    , OpenGL                    
                    , array      ^>=0.5.3.0
-                   , aeson      ^>=1.2.4.0
+                   , aeson      ^>=1.4.7.1
                    , directory  ^>=1.3.3.0
                    , filepath   ^>=1.4.2.1
                    , FTGL       
@@ -43,6 +46,7 @@ executable b1-chart
                    , B1.Data.List
                    , B1.Data.Price
                    , B1.Data.Price.Google
+                   , B1.Data.Price.IEX
                    , B1.Data.Range
                    , B1.Data.String.Utils
                    , B1.Data.Symbol
@@ -83,9 +87,31 @@ executable b1-chart
                    , B1.Program.Chart.SymbolEntry
                    , B1.Program.Chart.Vbo
                    , B1.Program.Chart.VolumeBars
+                   , Net.IEX.Book
+                   , Net.IEX.Chart
+                   , Net.IEX.Company
+                   , Net.IEX.DelayedQuote
+                   , Net.IEX.Dividend
+                   , Net.IEX.Earnings
+                   , Net.IEX.EffectiveSpread
+                   , Net.IEX.Financials
+                   , Net.IEX.IntraDayStats
+                   , Net.IEX.Market
+                   , Net.IEX.NewsItem
+                   , Net.IEX.OHLC
+                   , Net.IEX.Previous
+                   , Net.IEX.PriceTime
+                   , Net.IEX.Quote
+                   , Net.IEX.RecentStats
+                   , Net.IEX.RecordStats
+                   , Net.IEX.Relevant
+                   , Net.IEX.Split
+                   , Net.IEX.Stats
+                   , Net.IEX.TimeSeries
+                   , Net.IEX.VolumeByVenue
+                   , Net.Stocks
                    , Paths_b1
-  hs-source-dirs:      src
-  default-language:    Haskell2010
+  default-language:  Haskell2010
 
 executable b1-prices
   hs-source-dirs:
@@ -94,7 +120,11 @@ executable b1-prices
   ghc-options:      -main-is B1.Program.Prices.Main -threaded -O2
   build-depends:
                      base       ^>=4.12.0.0
+                   , aeson      ^>=1.4.7.1
+                   , bytestring ^>=0.10.8.2
+                   , containers ^>=0.5.10.2
                    , HTTP       ^>=4000.3.14
+                   , http-conduit ^>=2.2.4
                    , old-locale ^>=1.0.0.7
                    , time       ^>=1.8.0.2
   other-modules:
@@ -102,6 +132,7 @@ executable b1-prices
                    , B1.Data.List
                    , B1.Data.Price
                    , B1.Data.Price.Google
+                   , B1.Data.Price.IEX
                    , B1.Data.Price.Mock
                    , B1.Data.String.Utils
                    , B1.Data.Symbol
@@ -109,47 +140,56 @@ executable b1-prices
                    , B1.Data.Technicals.Stochastic
                    , B1.Data.Technicals.StockData
                    , B1.Program.Prices.Options
+                   , Net.IEX.Book
+                   , Net.IEX.Chart
+                   , Net.IEX.Company
+                   , Net.IEX.DelayedQuote
+                   , Net.IEX.Dividend
+                   , Net.IEX.Earnings
+                   , Net.IEX.EffectiveSpread
+                   , Net.IEX.Financials
+                   , Net.IEX.IntraDayStats
+                   , Net.IEX.Market
+                   , Net.IEX.NewsItem
+                   , Net.IEX.OHLC
+                   , Net.IEX.Previous
+                   , Net.IEX.PriceTime
+                   , Net.IEX.Quote
+                   , Net.IEX.RecentStats
+                   , Net.IEX.RecordStats
+                   , Net.IEX.Relevant
+                   , Net.IEX.Split
+                   , Net.IEX.Stats
+                   , Net.IEX.TimeSeries
+                   , Net.IEX.VolumeByVenue
+                   ,  Net.Stocks
+
                    
   default-language:
-                     Haskell2010                   
-                   
--- library
---   exposed-modules:     B1.Graphics.Rendering.FTGL.Utils
---                      , B1.Graphics.Rendering.OpenGL.Utils
---                      , B1.Graphics.Rendering.OpenGL.BufferManager
---                      , B1.Graphics.Rendering.OpenGL.Box
---                      , B1.Graphics.Rendering.OpenGL.Point
---                      , B1.Graphics.Rendering.OpenGL.LineSegment
---                      , B1.Graphics.Rendering.OpenGL.Shapes
---                      , B1.Program.Prices.Main
---                      , B1.Program.Prices.Options
---                      , B1.Program.Chart.Graph
---                      , B1.Program.Chart.StochasticLines
---                      , B1.Program.Chart.Button, B1.Program.Chart.Config, B1.Program.Chart.SideBar, B1.Program.Chart.Vbo, B1.Program.Chart.Instructions, B1.Program.Chart.Dirty, B1.Program.Chart.FragmentShader, B1.Program.Chart.Colors, B1.Program.Chart.Overlay, B1.Program.Chart.StochasticNumbers, B1.Program.Chart.ThreadManager, B1.Program.Chart.Main, B1.Program.Chart.PriceLines, B1.Program.Chart.Options, B1.Program.Chart.VolumeBars, B1.Program.Chart.GraphUtils, B1.Program.Chart.MonthLines, B1.Program.Chart.Candlesticks, B1.Program.Chart.Animation, B1.Program.Chart.StochasticColors, B1.Program.Chart.MouseUtils, B1.Program.Chart.Header, B1.Program.Chart.Resources, B1.Program.Chart.Chart, B1.Program.Chart.SymbolEntry, B1.Program.Chart.MovingAverageLines, B1.Program.Chart.ChartFrame, B1.Program.Chart.Screen, B1.Control.TaskManager, B1.Data.Price, B1.Data.Direction, B1.Data.List, B1.Data.Action, B1.Data.Range, B1.Data.Symbol, B1.Data.Price.Google, B1.Data.Price.Mock, B1.Data.Technicals.Stochastic, B1.Data.Technicals.MovingAverage, B1.Data.Technicals.StockData, B1.Data.String.Utils
---   -- other-modules:
---   -- other-extensions:
---   build-depends:       base ^>=4.12.0.0
---                      , OpenGL ^>=3.0.3.0
---                      , time ^>=1.8.0.2
---                      , array ^>=0.5.3.0
---                      , old-locale ^>=1.0.0.7
---                      , directory ^>=1.3.3.0
---                      , filepath ^>=1.4.2.1
---                      , HTTP ^>=4000.3.14
---   hs-source-dirs:      src
---   default-language:    Haskell2010
+                     Haskell2010
 
--- executable b1
---   main-is:             B1/Program/Chart/Main.hs
---   -- other-modules:
---   -- other-extensions:
---   build-depends:       base ^>=4.12.0.0
---                      , OpenGL ^>=3.0.3.0
---                      , time ^>=1.8.0.2
---                      , array ^>=0.5.3.0
---                      , old-locale ^>=1.0.0.7
---                      , directory ^>=1.3.3.0
---                      , filepath ^>=1.4.2.1
---                      , HTTP ^>=4000.3.14
---   hs-source-dirs:      src
---   default-language:    Haskell2010
+library
+  hs-source-dirs:
+               src
+  build-depends:
+               base         ^>=4.12.0.0
+             , http-conduit ^>=2.2.4
+             , aeson        ^>=1.4.7.1
+             , bytestring   ^>=0.10.8.2
+             , containers   ^>=0.5.10.2
+             , unordered-containers ^>=0.2.8.0
+             , semigroups   ^>=0.18.4
+  exposed-modules:
+               Net.Stocks, Net.IEX.Stats
+             , Net.IEX.Chart, Net.IEX.Company
+             , Net.IEX.Earnings, Net.IEX.DelayedQuote
+             , Net.IEX.Dividend, Net.IEX.EffectiveSpread
+             , Net.IEX.Financials, Net.IEX.NewsItem
+             , Net.IEX.OHLC, Net.IEX.Previous
+             , Net.IEX.PriceTime, Net.IEX.Quote
+             , Net.IEX.Relevant, Net.IEX.Split
+             , Net.IEX.VolumeByVenue, Net.IEX.Market
+             , Net.IEX.IntraDayStats, Net.IEX.RecentStats
+             , Net.IEX.RecordStats, Net.IEX.Book, Net.IEX.TimeSeries
+  default-language:
+               Haskell2010

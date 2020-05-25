@@ -17,7 +17,7 @@ main = do
   args <- getArgs
   (options, nonOptions) <- readOptions args
 
-  putStrLn $ "Symbol: " ++ symbol options
+  putStrLn $ "Symbol: "      ++ symbol options
   putStrLn $ "Data source: " ++ show (dataSource options)
 
   pricesOrError <- getPrices (dataSource options) (symbol options)

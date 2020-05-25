@@ -28,8 +28,8 @@ main = do
   createWindow
   initClientState
 
-  resourcesRef <- createInitialResources options
-  resources <- readIORef resourcesRef
+  resourcesRef   <- createInitialResources options
+  resources      <- readIORef resourcesRef
   loadTextures
 
   windowDirtyRef <- newIORef False
@@ -66,25 +66,27 @@ loadTextures = do
       ]
 
 bindTexture :: Int -> String -> IO ()
-bindTexture textureNumber fileName = do
-  textureBinding Texture2D $= Just (TextureObject (fromIntegral textureNumber))
-  textureFilter Texture2D $= ((Linear', Nothing), Linear')
-  loadResult <- loadTexture2D fileName [BuildMipMaps]
-  traceIO $ "Loading texture " ++ fileName ++ "..."
-      ++ if loadResult then "SUCCESS" else "FAIL"
+bindTexture textureNumber fileName =
+  do
+    textureBinding Texture2D $= Just (TextureObject (fromIntegral textureNumber))
+    textureFilter Texture2D  $= ((Linear', Nothing), Linear')
+    loadResult <- loadTexture2D fileName [BuildMipMaps]
+    traceIO $ "Loading texture " ++ fileName ++ "..."
+        ++ if loadResult then "SUCCESS" else "FAIL"
 
 -- | Initialize the resources that should be immutable like fonts.
 -- The other fields will be filled in later.
 createInitialResources :: Options -> IO (IORef Resources)
-createInitialResources options = do
-  fontPath <- getDataFileName "res/fonts/orbitron/orbitron-medium.ttf"
-  font <- createTextureFont fontPath
-  vertexShaderPath <- getDataFileName "res/shaders/vertex-shader.txt"
-  fragmentShaderPath <- getDataFileName "res/shaders/fragment-shader.txt"
-  program <- loadProgram [vertexShaderPath] [fragmentShaderPath]
-  bufferManager <- newBufferManager
-  taskManager <- newTaskManager
-  newIORef $ newResources font program bufferManager taskManager
+createInitialResources options =
+  do
+    fontPath           <- getDataFileName "res/fonts/orbitron/orbitron-medium.ttf"
+    font               <- createTextureFont fontPath
+    vertexShaderPath   <- getDataFileName "res/shaders/vertex-shader.txt"
+    fragmentShaderPath <- getDataFileName "res/shaders/fragment-shader.txt"
+    program            <- loadProgram [vertexShaderPath] [fragmentShaderPath]
+    bufferManager      <- newBufferManager
+    taskManager        <- newTaskManager
+    newIORef $ newResources font program bufferManager taskManager
 
 -- TODO: Move loading program code to a helper module
 loadProgram :: [FilePath] -> [FilePath] -> IO Program

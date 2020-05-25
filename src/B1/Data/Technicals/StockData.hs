@@ -22,27 +22,34 @@ import System.IO
 import B1.Control.TaskManager
 import B1.Data.Price
 import B1.Data.Price.Google
+import B1.Data.Price.IEX
 import B1.Data.Symbol
 import B1.Data.Technicals.MovingAverage
 import B1.Data.Technicals.Stochastic
+
+import Net.IEX.Quote
 
 -- TODO: Rename to StockDataFactory
 data StockData = StockData Symbol (MVar (Either StockPriceData String))
 
 -- TODO: Rename to StockData
-data StockPriceData = StockPriceData
-  { prices :: [Price]
-  , stochastics :: [Stochastic]
-  , weeklyPrices :: [Price]
+data StockPriceData =
+  StockPriceData
+  { prices            :: [Price]
+  , stochastics       :: [Stochastic]
+  , weeklyPrices      :: [Price]
   , weeklyStochastics :: [Stochastic]
-  , movingAverage25 :: [MovingAverage]
-  , movingAverage50 :: [MovingAverage]
-  , movingAverage200 :: [MovingAverage]
-  , numDailyElements :: Int
+  , movingAverage25   :: [MovingAverage]
+  , movingAverage50   :: [MovingAverage]
+  , movingAverage200  :: [MovingAverage]
+  , numDailyElements  :: Int
   , numWeeklyElements :: Int
   }
 
-data StockDataStatus = Loading | Data | ErrorMessage deriving (Eq)
+data StockDataStatus =
+    Loading
+  | Data
+  | ErrorMessage deriving (Eq)
 
 newStockData :: TaskManager -> Symbol -> IO StockData
 newStockData taskManager symbol = do
@@ -67,32 +74,35 @@ getStartDate = do
 getEndDate :: IO LocalTime
 getEndDate = do
   timeZone <- getCurrentTimeZone
-  time <- getCurrentTime
+  time     <- getCurrentTime
   let localTime = utcToLocalTime timeZone time 
   return $ localTime { localTimeOfDay = midnight }
+
+createStockPriceData' :: [Quote] -> StockPriceData
+createStockPriceData' prices = undefined
 
 createStockPriceData :: [Price] -> StockPriceData
 createStockPriceData prices = 
   StockPriceData
-    { prices = prices
-    , stochastics = stochastics
-    , weeklyPrices = weeklyPrices
-    , weeklyStochastics = weeklyStochastics
-    , movingAverage25 = movingAverage25
-    , movingAverage50 = movingAverage50
-    , movingAverage200 = movingAverage200
-    , numDailyElements = numDailyElements
-    , numWeeklyElements = numWeeklyElements
-    }
+  { prices            = prices
+  , stochastics       = stochastics
+  , weeklyPrices      = weeklyPrices
+  , weeklyStochastics = weeklyStochastics
+  , movingAverage25   = movingAverage25
+  , movingAverage50   = movingAverage50
+  , movingAverage200  = movingAverage200
+  , numDailyElements  = numDailyElements
+  , numWeeklyElements = numWeeklyElements
+  }
   where
     stochasticsFunction = getStochastics 10 3
-    stochastics = stochasticsFunction prices
+    stochastics         = stochasticsFunction prices
 
-    movingAverage25 = getMovingAverage 25 prices
-    movingAverage50 = getMovingAverage 50 prices
+    movingAverage25  = getMovingAverage 25 prices
+    movingAverage50  = getMovingAverage 50 prices
     movingAverage200 = getMovingAverage 200 prices
 
-    weeklyPrices = getWeeklyPrices prices
+    weeklyPrices      = getWeeklyPrices prices
     weeklyStochastics = stochasticsFunction weeklyPrices
 
     maxDailyElements = minimum
@@ -102,26 +112,30 @@ createStockPriceData prices =
 
     weeksInYear = 52
 
-    maxWeeklyElements = minimum
-        [ length weeklyPrices
-        , length weeklyStochastics
-        , weeksInYear
-        ]
+    maxWeeklyElements =
+      minimum
+      [ length weeklyPrices
+      , length weeklyStochastics
+      , weeksInYear
+      ]
 
-    earliestStartTime = (startTime
+    earliestStartTime =
+      ( startTime
         . last
         . take maxWeeklyElements
-        ) weeklyPrices
+      ) weeklyPrices
 
-    numDailyElements = (length
+    numDailyElements =
+      ( length
         . takeWhile ((>= earliestStartTime) . startTime)
         . take maxDailyElements
-        ) prices
+      ) prices
 
-    numWeeklyElements = (length
+    numWeeklyElements =
+      ( length
         . takeWhile ((>= earliestStartTime) . startTime) 
         . take maxWeeklyElements
-        ) weeklyPrices
+      ) weeklyPrices
 
 getStockDataStatus :: StockData -> IO StockDataStatus
 getStockDataStatus = handleStockData (ignore Data) (ignore ErrorMessage) Loading

@@ -6,9 +6,10 @@ module B1.Program.Prices.Options
 
 import System.Console.GetOpt
 
-data Options = Options
+data Options =
+  Options
   { dataSource :: DataSource
-  , symbol :: String
+  , symbol     :: String
   }
 
 data DataSource = Google | Mock deriving Show
